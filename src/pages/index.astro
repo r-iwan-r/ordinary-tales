@@ -1,36 +1,55 @@
 ---
+// 1. 共通CSSと、作った部品をインポートする
+import '../styles/global.css';
+import Splash from '../components/Splash.astro';
 ---
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <title>Ordinary tales Official Website</title>
-  </head>
-  <body>
-    <h1>Ordinary tales</h1>
-    <p>ありふれた物語を、音楽に。</p>
-  </body>
-</html>
 
-<style>
-  body {
-    background-color: #1a1a1a;
-    color: #ffffff;
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-  }
-  h1 {
-    font-size: 4rem;
-    letter-spacing: 0.2rem;
-    margin: 0;
-  }
-  p {
-    font-size: 1.2rem;
-    color: #888;
-    margin-top: 1rem;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ordinary tales</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+</head>
+<body>
+
+	<Splash />
+
+	<main id="Content_Main">
+		<section class="hero">
+			<h1>Ordinary tales</h1>
+			<p>Official Website - Under Construction</p>
+		</section>
+		
+		<nav>
+			<p>Coming Soon...</p>
+		</nav>
+	</main>
+
+	<style>
+		/* メインコンテンツ固有の見た目だけここに書く */
+		#Content_Main {
+			opacity: 0; /* 最初は隠しておく（JSでvisibleクラスをつける） */
+			transition: opacity 1.5s ease-in;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+		}
+
+		#Content_Main.visible {
+			opacity: 1;
+		}
+
+		h1 {
+			font-size: 3rem;
+			margin-bottom: 1rem;
+		}
+	</style>
+</body>
+</html>

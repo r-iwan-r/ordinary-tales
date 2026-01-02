@@ -1,0 +1,34 @@
+/* --- サイト全体の基本設定 --- */
+
+/* 1. リセット設定：ブラウザが勝手につける余白を消す */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 2. 背景と文字色の基本：バンドの世界観に合わせて黒背景に */
+body {
+    background-color: #000;
+    color: #fff;
+    /* フォントはお好みで。sans-serifは標準的なゴシック体です */
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    line-height: 1.6;
+}
+
+/* 3. リンクの色設定（後で使う用） */
+a {
+    color: #fff;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+a:hover {
+    opacity: 0.7;
+}
+
+/* 4. 画像が枠からはみ出さないための魔法の呪文 */
+img {
+    max-width: 100%;
+    height: auto;
+}

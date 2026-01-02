@@ -1,0 +1,75 @@
+---
+import { Image } from 'astro:assets';
+import logoImage from '../assets/OT_Mark_White.png';
+---
+
+<div id="Intro">
+	<div class="Intro_Content">
+	<Image src={logoImage} alt="Ordinary Tales Logo" width={400} quality="high" />
+	</div>
+	<div class="Intro_Text">Ordinary tales</div>
+</div>
+
+<style>
+	#Intro {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100vh;
+		background: #000;
+		display: flex;
+		flex-direction: column; /* ロゴとテキストを縦に並べる */
+		justify-content: center;
+		align-items: center;
+		z-index: 9999;
+		transition: opacity 1s ease-out;
+	}
+
+  .Intro_Content {
+	 animation: Fade_In_Out 3s ease-in-out forwards;
+  }
+
+.Intro_Text {
+	/* 1. Alfa Slab One の指定を消して、標準フォントに戻す */
+	/* font-family: 'Alfa Slab One', serif;  ←この行を削除 */
+
+	font-size: 2.5rem;
+	font-weight: bold; /* デフォルトフォントで太く見せる */
+	letter-spacing: 0.1rem;
+	margin-top: 20px;
+	color: #fff;
+	animation: Pulse_Effect 2s infinite ease-in-out;
+}
+
+  /* アニメーション名もアタマを大文字にしました */
+  @keyframes Pulse_Effect {
+	0%, 100% { opacity: 0.3; }
+	50% { opacity: 1; }
+  }
+
+  @keyframes Fade_In_Out {
+	 0% { opacity: 0; transform: scale(0.95); }
+	 30%, 70% { opacity: 1; transform: scale(1); }
+	 100% { opacity: 0; transform: scale(1.05); }
+  }
+</style>
+
+<script>
+  // ID名を新しいルールに更新
+  const intro = document.getElementById('Intro');
+  const main = document.getElementById('Content_Main');
+
+  setTimeout(() => {
+	 if (intro && main) {
+		intro.style.opacity = '0';
+		main.classList.add('visible');
+
+		// 完全に消えたら非表示にする
+		setTimeout(() => {
+		  intro.style.display = 'none';
+		  document.body.style.overflow = 'auto'; // スクロールを許可
+		}, 1000);
+	 }
+  }, 3000); // 3秒間表示
+</script>
