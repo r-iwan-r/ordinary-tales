@@ -3,73 +3,107 @@ import { Image } from 'astro:assets';
 import logoImage from '../assets/OT_Mark_White.png';
 ---
 
-<div id="Intro">
-	<div class="Intro_Content">
-	<Image src={logoImage} alt="Ordinary Tales Logo" width={400} quality="high" />
+<div id="Splash">
+	<div class="Content_Logo">
+		<Image src={logoImage} alt="Ordinary Tales Logo" width={287} quality="high" />
 	</div>
-	<div class="Intro_Text">Ordinary tales</div>
+	<div class="Text_Group">
+		<div class="Text_Main">Ordinary tales</div>
+		<div class="Text_Sub">website.</div>
+	</div>
 </div>
 
 <style>
-	#Intro {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100vh;
-		background: #000;
-		display: flex;
-		flex-direction: column; /* ロゴとテキストを縦に並べる */
-		justify-content: center;
-		align-items: center;
-		z-index: 9999;
-		transition: opacity 1s ease-out;
-	}
-
-  .Intro_Content {
-	 animation: Fade_In_Out 3s ease-in-out forwards;
-  }
-
-.Intro_Text {
-	/* 1. Alfa Slab One の指定を消して、標準フォントに戻す */
-	/* font-family: 'Alfa Slab One', serif;  ←この行を削除 */
-
-	font-size: 2.5rem;
-	font-weight: bold; /* デフォルトフォントで太く見せる */
-	letter-spacing: 0.1rem;
-	margin-top: 20px;
-	color: #fff;
-	animation: Pulse_Effect 2s infinite ease-in-out;
+#Splash {
+	/* 画面の最前面に固定して動かないようにする */
+	position: fixed;
+	/* 左上の角を基準点にする */
+	top: 0;
+	left: 0;
+	/* 画面全体（横幅・高さ100%）を覆う */
+	width: 100%;
+	height: 100vh;
+	/* 背景を黒にする */
+	background: #000;
+	/* レイアウトをフレックスボックス（自由な配置）にする */
+	display: flex;
+	/* 中身の要素（ロゴとテキスト）を「横」に並べる */
+	flex-direction: row; 
+	/* 横方向の「中央」に寄せる */
+	justify-content: center;
+	/* 縦方向の「中央」に寄せる */
+	align-items: center;
+	/* ロゴとテキストの間の距離を40pxあける */
+	gap: 40px;
+	/* 他の要素より上に重なるように優先度を最大級にする */
+	z-index: 9999;
+	/* 透明度（opacity）が変化する時、1秒かけてじわっと動かす */
+	transition: opacity 1s ease-out;
 }
 
-  /* アニメーション名もアタマを大文字にしました */
-  @keyframes Pulse_Effect {
-	0%, 100% { opacity: 0.3; }
-	50% { opacity: 1; }
-  }
+/* ロゴのアニメーション */
+.Content_Logo {
+	animation: Fade_In_Out 4s ease-in-out forwards;
+}
 
-  @keyframes Fade_In_Out {
-	 0% { opacity: 0; transform: scale(0.95); }
-	 30%, 70% { opacity: 1; transform: scale(1); }
-	 100% { opacity: 0; transform: scale(1.05); }
-  }
+/* テキストグループを確実に「縦」に並べる */
+.Text_Group {
+	display: flex;
+	flex-direction: column; /* これで縦並びになります */
+	align-items: center; /* 縦をセンターで揃える */
+	justify-content: center;
+}
+
+.Text_Main {
+	font-size: 4rem;
+	font-weight: bold;
+	letter-spacing: 0.15rem;
+	color: #fff;
+	white-space: nowrap;
+	line-height: 1.1; /* 行間を少し詰めて下の文字と近づける */
+	animation: Fade_In_Out 4s ease-in-out forwards;
+}
+
+.Text_Sub {
+	font-size: 2rem;
+	letter-spacing: 0.1rem; 
+	color: #fff;
+	margin-top: 25px; /* 上の文字との隙間を微調整 */
+	white-space: nowrap;
+	animation: Fade_In_Out_Sub_Text 4s ease-in-out forwards;
+}
+
+@keyframes Fade_In_Out {
+	0% { opacity: 0; transform: scale(0.95); }		/* 最初は透明で少し小さい */
+	30%, 70% { opacity: 1; transform: scale(1); }	/* 途中でくっきり表示 */
+	100% { opacity: 0; transform: scale(1.1); }		/* 最後は少し膨らみながら消える */
+}
+
+/* Sub_Text専用：出るのを遅らせる設定 */
+@keyframes Fade_In_Out_Sub_Text {
+	0%, 25% { opacity: 0; transform: scale(0.95); }	/* 全体の1/4（1秒間）は隠しておく */
+	50% { opacity: 1; transform: scale(1); }		/* 2秒地点で表示完了 */
+	70% { opacity: 1; transform: scale(1); }		/* ここまではメインと同じ動き */
+	100% { opacity: 0; transform: scale(1.1); }		/* 最後は一緒に消える */
+}
+
 </style>
 
 <script>
-  // ID名を新しいルールに更新
-  const intro = document.getElementById('Intro');
-  const main = document.getElementById('Content_Main');
+	// ID名を新しいルールに更新
+	const intro = document.getElementById('Splash');
+	const main  = document.getElementById('Content_Main');
 
-  setTimeout(() => {
-	 if (intro && main) {
-		intro.style.opacity = '0';
-		main.classList.add('visible');
+	setTimeout(() => {
+		if (intro && main) {
+			intro.style.opacity = '0';
+			main.classList.add('visible');
 
-		// 完全に消えたら非表示にする
-		setTimeout(() => {
-		  intro.style.display = 'none';
-		  document.body.style.overflow = 'auto'; // スクロールを許可
-		}, 1000);
-	 }
-  }, 3000); // 3秒間表示
+			// 完全に消えたら非表示にする
+			setTimeout(() => {
+				intro.style.display = 'none';
+				document.body.style.overflow = 'auto'; // スクロールを許可
+			}, 1000);
+	 	}
+	}, 4000); // 3秒間表示
 </script>
