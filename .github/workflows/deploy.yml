@@ -1,28 +1,28 @@
-name: Auto Deploy to FTP /* この処理の名前 */
+name: Auto Deploy to FTP
 
 on:
   push:
     branches:
-      - main /* mainブランチに保存された時に実行する */
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest /* 実行環境は最新のLinuxを使う */
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout /* GitHubから最新コードを取り出す */
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install dependencies /* 必要なツール(Node.jsなど)を入れる */
+      - name: Install dependencies
         run: npm install
 
-      - name: Build /* Astroのビルドを実行してHTMLを作る */
+      - name: Build
         run: npm run build
 
-      - name: FTP Deploy /* 出来上がったファイルをFTPで送る */
+      - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }} /* GitHubに登録したサーバー名 */
-          username: ${{ secrets.FTP_USERNAME }} /* GitHubに登録したユーザー名 */
-          password: ${{ secrets.FTP_PASSWORD }} /* GitHubに登録したパスワード */
-          local-dir: ./dist/ /* ビルドで出来たこのフォルダを送る */
-          server-dir: / /* サーバー側の送り先フォルダ（必要に応じて書き換え） */
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: /
