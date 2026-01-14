@@ -1,4 +1,4 @@
-name: Deploy to FTP /* この処理の名前 */
+name: Auto Deploy to FTP /* この処理の名前 */
 
 on:
   push:
