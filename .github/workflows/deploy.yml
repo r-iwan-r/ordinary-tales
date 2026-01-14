@@ -1,27 +1,27 @@
-name: Auto Deploy to FTP
+name: Auto Deploy to FTP /* 処理の名前 */
 
 on:
   push:
     branches:
-      - main
+      - main /* mainブランチにプッシュされた時に動く */
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest /* 最新のLinux環境で実行 */
     steps:
-      - name: Checkout
+      - name: Checkout /* GitHubからコードを取得 */
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install dependencies /* ライブラリをインストール */
         run: npm install
 
-      - name: Build
+      - name: Build /* サイトをビルド(ここでmicroCMSの鍵を使う) */
         run: npm run build
         env:
           MICROCMS_SERVICE_DOMAIN: ${{ secrets.MICROCMS_SERVICE_DOMAIN }}
           MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
 
-      - name: FTP Deploy
+      - name: FTP Deploy /* サーバーへ転送 */
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
