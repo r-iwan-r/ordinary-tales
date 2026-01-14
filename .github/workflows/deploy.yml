@@ -1,4 +1,4 @@
-name: Auto Deploy to FTP
+name: Auto Deploy to FTP v2
 
 on:
   push:
