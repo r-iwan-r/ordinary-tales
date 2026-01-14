@@ -1,0 +1,153 @@
+---
+/* --- 1. 型定義の読み込み --- */
+import type { Archive as ArchiveType } from '../library/microcms'; // 型を呼び出し
+
+/* --- 2. 親コンポーネントからデータを受け取る設定 --- */
+interface Props {
+  item: ArchiveType; // アーカイブ1件分のデータ
+}
+
+const { item } = Astro.props; // データを変数に展開
+---
+
+<div class="Archive_Card">
+  {/* --- 上段：リリース順とタイトルのエリア --- */}
+  <div class="Title_Area">
+    <p class="ReleaseOrder">{item.ReleaseOrder}</p> {/* リリース順 */}
+    <h3 class="Title">『{item.Title}』</h3> {/* タイトル */}
+  </div>
+
+  {/* --- 下段：画像と情報を横並びにするための包み --- */}
+  <div class="Contents_Wrapper">
+    <div class="Archive_Img_Box">
+      <a href={item.URL01_URL} target="_blank">
+        <img src={item.Img.url} alt={item.Title} class="Archive_Img" /> {/* 画像 */}
+      </a>
+    </div>
+
+    <div class="Archive_Info">
+      <p class="YearDate">Release : {item.Year}.{item.Date}</p> {/* リリース日 */}
+      <div class="Links">
+        {item.URL01_URL && <a href={item.URL01_URL} target="_blank">{item.URL01_LinkText}</a>} {/* リンク01 */}
+        {item.URL02_URL && <a href={item.URL02_URL} target="_blank">{item.URL02_LinkText}</a>} {/* リンク02 */}
+        {item.URL03_URL && <a href={item.URL03_URL} target="_blank">{item.URL03_LinkText}</a>} {/* リンク03 */}
+        {item.URL04_URL && <a href={item.URL04_URL} target="_blank">{item.URL04_LinkText}</a>} {/* リンク04 */}
+        {item["CD-R"] && <p class="CDR_Text">{item["CD-R"]}</p>} {/* CD-R情報 */}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+	/* カード全体の縦並び設定 */
+  .Archive_Card {
+    display: flex; /* フレックスボックス */
+    flex-direction: column; /* 縦並び */
+    width: 400px; /* 幅固定 */
+    padding: 10px; /* 内側余白 */
+    box-sizing: border-box; /* paddingと線を含めた幅にする */
+    gap: 10px; /* 上下の隙間 */
+    
+    /* 【修正ポイント】 */
+    /* transparent（透明）な線をあらかじめ引いて、場所を確保しておく */
+    border: 2px solid transparent; 
+    
+    /* 背景、枠線、文字色の3つを0.5秒で滑らかにする */
+  	transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+  }
+
+	.Archive_Card:hover {
+    background-color: #222222; /* ホバー時に背景を黒にする */
+  	border: 2px solid #afeeee; /* ホバー時に黒枠を表示 */
+		color: #ffffff; /* ★追加：文字色を白にする */
+  }
+
+  /* 下段（画像＋情報）を横並びにする設定 */
+  .Contents_Wrapper {
+    display: flex; /* 画像と情報を横並びにする */
+    flex-direction: row; /* 横方向に配置 */
+    align-items: flex-start; /* 上揃えで配置 */
+    gap: 15px; /* 画像と文字情報の間の隙間 */
+    width: 100%; /* 横幅いっぱい */
+  }
+
+	
+
+	.Archive_Card:hover .Archive_Img {
+    filter: grayscale(0%); /* モノクロを解除してカラーにする */
+  }
+
+	/* 画像サイズの固定（以前の設定を維持） */
+  .Archive_Img {
+    width: 150px; /* 幅固定 */
+    height: 150px; /* 高さ固定 */
+    flex-shrink: 0; /* 絶対に潰さない */
+    object-fit: cover; /* 比率維持 */
+		filter: grayscale(100%); /* 完全に白黒にする */
+    transition: filter 0.5s ease; /* 0.5秒かけて変化させる */
+  }
+
+	/* 右側のテキストエリア */
+  .Archive_Info {
+    flex-grow: 1; /* 残りの幅をすべて使う */
+    text-align: left; /* 左揃え */
+  }
+
+	.ReleaseOrder {
+    font-size: 0.8rem; /* サイズ */
+    margin: 0; /* マージンなし */
+  }
+
+	/* タイトルエリアを横並びにする設定 */
+  .Title_Area {
+    display: flex; /* 横並びにする */
+    align-items: baseline; /* 文字の下端で揃える */
+    gap: 0px; /* No.とタイトルの間の隙間 */
+    width: 100%; /* 横幅いっぱい */
+    margin-bottom: 0px; /* 画像との隙間 */
+  }
+
+  /* ReleaseOrder の微調整（お好みで） */
+  .ReleaseOrder {
+		font-size: 0.9rem; /*文字の大きさ*/
+    flex-shrink: 0; /* No.が潰れないようにする */
+    white-space: nowrap; /* No.は改行させない */
+  }
+
+  /* Title の微調整 */
+  .Title {
+    margin: 0; /* 余計な余白を消す */
+    /* ここで 1.1rem 設定などは維持されます */
+  }
+
+	.YearDate {
+	 font-size: 0.8rem; /* 年月日のサイズ */
+	 opacity: 0.7; /* 少し薄くして上品に */
+	 margin-bottom: 5px; /* リンク集との距離 */
+	}
+
+	.Links {
+	 display: flex; /* リンクを並べる */
+	 flex-direction: column; /* 縦に並べる */
+	 gap: 4px; /* 各リンクの隙間 */
+	}
+
+	.Links a, .CDR_Text {
+	font-size: 0.9rem; /* リンクの文字サイズ */
+	text-decoration: none; /* 下線を消す */
+	color: inherit; 
+  
+  transition: color 0.2s; /* ホバー時のピンクへの変化速度 */
+  margin: 0; /* 余白ゼロ */
+	}
+
+	.Links a:hover {
+	 color: #ff1493; /* ホバー時はショッキングピンクにする */
+	}
+
+	.CDR_Text {
+		color: inherit; /* 親の文字色（白）を引き継ぐ */
+		cursor: default; /* テキストなのでカーソルは矢印のまま */
+		margin: 0; /* 余白をゼロにする */
+	}
+</style>

@@ -1,0 +1,60 @@
+---
+/* src/components/Footer.astro */
+
+/* 現在の日時オブジェクトを作成する */
+const now = new Date(); /* 実行時の日時を取得 */
+
+/* 「年」を取得する */
+const currentYear = now.getFullYear(); /* 西暦を4桁で取得 */
+
+/* 「年.月.日」の形式で日付を整える */
+/* 月は0から始まるので+1し、2桁（01など）で揃える設定です */
+const formattedDate = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+
+/* 最終更新日の情報を定義 */
+const updateInfo = {
+  label: "Latest update", /* 表示用ラベル */
+  date: formattedDate /* 自動生成した日付（2026.01.15 など）を入れる */
+};
+
+/* コピーライトの情報を定義 */
+const copyrightInfo = {
+  startYear: "2014", /* 開始年 */
+  currentYear: currentYear, /* 自動取得した現在の年 */
+  owner: "Ordinary tales" /* サイト名 */
+};
+---
+
+<footer class="site-footer">
+	<!-- 1. コピーライトを上に配置 -->
+	<p class="copyright">&copy; {copyrightInfo.startYear} - {copyrightInfo.currentYear} {copyrightInfo.owner}</p>
+	
+	<!-- 2. 最終更新日を下に配置 -->
+	<p class="update">{updateInfo.label} : {updateInfo.date}</p>
+</footer>
+
+<style>
+	.site-footer {
+		width: 100%;
+		padding: 80px 20px 60px;
+		text-align: center;
+		background-color: #ffffff; 
+		color: #000000; 
+	}
+
+	/* copyright をハッキリした書式に変更 */
+	.copyright {
+		font-size: 0.75rem;
+		letter-spacing: 0.1em; /* 間隔を広めに */
+		opacity: 0.5; /* 少し濃く */
+		margin-bottom: 8px;
+	}
+
+	/* update を控えめな書式に変更 */
+	.update {
+		font-size: 0.7rem;
+		letter-spacing: 0.05em; /* 間隔を標準に */
+		opacity: 0.4; /* 薄く */
+		margin-bottom: 0;
+	}
+</style>

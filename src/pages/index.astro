@@ -1,0 +1,381 @@
+---
+/* --- 1. 外部パーツやスタイルの読み込み --- */
+import '../styles/global.css'; // 全体共通デザイン
+import Splash from '../components/Splash.astro'; // スプラッシュ画面
+import Head from '../components/Head.astro'; // ヘッドタグ
+import Archive from '../components/Archive.astro'; // アーカイブパーツ
+import Member from '../components/Member.astro'; // メンバーパーツ
+import Footer from '../components/Footer.astro'; // フッターパーツ
+import { Image } from 'astro:assets'; // 画像最適化ツール
+
+/* --- 2. ローカルにあるロゴ画像の読み込み --- */
+import logoMarkImage from '../assets/imgs/OT_Mark_Black.png'; // ロゴマーク
+import logoTextImage from '../assets/imgs/OT_TextLogo_Black.png'; // テキストロゴ
+
+/* --- 3. MicroCMSと通信するための準備 --- */
+import { client } from '../library/microcms'; // 通信設定
+import type { Member as MemberType, Archive as ArchiveType, Movie as MovieType } from '../library/microcms'; // library/microcms から Movie もインポートする
+import MV from '../components/MV.astro'; // MVコンポーネントを読み込む
+
+/* --- 4. MicroCMSからデータを実際に取ってくる処理 --- */
+/* member */
+const response = await client.get({
+	endpoint: "member", // メンバー情報を取得
+	queries: { fields: ["id", "Name", "Part", "img"] }, // 取得項目を限定
+});
+const members: MemberType[] = response.contents; // 配列に格納
+
+/* archive */
+const archiveResponse = await client.get({
+	endpoint: "archive",
+	queries: { 
+		fields: [
+			"id", "ReleaseOrder", "Title", "Year", "Date", // 「Date」を追加
+			"URL01_LinkText", "URL01_URL", 
+			"URL02_LinkText", "URL02_URL", 
+			"URL03_LinkText", "URL03_URL", 
+			"URL04_LinkText", "URL04_URL", 
+			"Img", "CD-R" // 「CD-R」を追加
+		] 
+	},
+});
+const archives: ArchiveType[] = archiveResponse.contents; // 配列に格納
+
+/* movie */
+const movieResponse = await client.get({
+	endpoint: "movie", /* MicroCMSのAPI名「movie」を指定 */
+	queries: { fields: ["id", "Title", "URL", "Pass","IMG"] }, /* 取得するフィールドを指定 */
+});
+const movies: MovieType[] = movieResponse.contents; /* 配列に格納 */
+
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<Head />
+	<title>Ordinary tales | TOP</title>
+</head>
+<body>
+
+	<Splash />
+
+	<main id="Content_Main">
+		<section class="hero">
+			{/* --- 1. ロゴとメンバーを横並びにするための包み --- */}
+			<div class="Logo_Member_Wrapper">
+				{/* ロゴエリア */}
+				<div class="Logo_Area">
+					<div class="Main_Mark">
+						<Image src={logoMarkImage} alt="Ordinary tales" width={180} quality="high" />
+					</div>
+					<div class="Main_Logo_Text">
+						<h1><Image src={logoTextImage} alt="Ordinary tales" width={550} quality="high"/></h1>
+						<p class="tagline">Official Website</p>
+					</div>
+				</div>
+
+				{/* メンバーエリア */}
+					<section class="Member_Container">
+						{members.map((member) => (
+						<Member member={member} />
+						))}
+					</section>
+
+			</div>
+
+			{/* --- 2. アーカイブ以降はそのまま（外側に出す） --- */}
+			<div class="Archive_Header">
+				<h2>Archive</h2>
+				<hr class="Archive_Line" />
+			</div>
+
+		<section class="Archive_Section">
+			{archives.map((item) => (
+				<Archive item={item} />
+			))}
+		</section>
+
+		<div class="MV_Header">
+			<h2>MV</h2>
+			<hr class="Archive_Line" />
+		</div>
+
+		<section class="MV_Section">
+			{movies.map((movie) => (
+				<MV movie={movie} /> /* 取得した動画の数だけ表示 */
+			))}
+		</section>
+
+		{/* モーダル演出 */}
+		<div id="Video_Modal" class="modal">
+			<div class="modal_Backdrop"></div>
+			<div class="modal_Content">
+			<div id="Video_Player_Container"></div>
+				<button id="Close_Modal">CLOSE</button>
+			</div>
+		</div>
+
+		<p class="status">Under Construction</p>
+		</section>
+
+		<Footer />
+
+	</main>
+
+<style>
+	/* 共通の土台設定 */
+	html, body {
+    overflow-x: hidden; /* 横方向のはみ出しを強制的にカットする */
+    width: 100%; /* 幅を画面ぴったりに固定する */
+    margin: 0; /* ブラウザ特有の外側の余白を消す */
+    padding: 0; /* ブラウザ特有の内側の余白を消す */
+    background-color: #fff; /* 念のため全体を白背景に設定する */
+  }
+
+	#Content_Main {
+    min-height: 100vh; /* 最低でも画面いっぱいの高さを確保する */
+    display: flex; /* 要素を並べるための設定 */
+    flex-direction: column; /* 要素を縦に並べる */
+    align-items: center; /* 要素を左右中央に寄せる */
+    justify-content: center; /* 要素を上下中央に寄せる */
+    padding: 100px 20px; /* 上下に大きな余白、左右に少しの余白を作る */
+    background-color: #fff; /* コンテンツエリアを白背景にする */
+    color: #000; /* 文字色を黒にする */
+    text-align: center; /* テキストを中央揃えにする */
+    width: 100%; /* 幅を100%にする */
+    box-sizing: border-box; /* 余白を含めて幅を計算するようにする */
+  }
+
+	/* --- ロゴとメンバーを横並びにする --- */
+	.Logo_Member_Wrapper {
+		display: flex; /* 親要素をフレックスボックスにする */
+		align-items: flex-end; /* 子要素（600pxの塊同士）の下端を揃える */
+		width: 1200px; /* 全体の幅を1200pxに固定 */
+		margin: 0 auto; /* 1200pxの枠自体を画面中央に置く */
+	}
+
+	.Logo_Area {
+		flex: 1; /* 1200pxの半分（600px）を確保 */
+		display: flex; /* 内部をフレックスボックスにする */
+		flex-direction: column; /* 縦並び（マークとテキスト）にする */
+		align-items: center; /* 横方向の真ん中に置く */
+		justify-content: flex-end; /* ★追加：自分のエリアの「下」に押し込む */
+	}
+
+	/* ロゴ周りのマージン設定 */
+	.Main_Mark { margin-bottom: 0px; }
+
+	h1 { margin: 0; line-height: 0; }
+
+	.tagline { font-size: 1.3rem; margin-top: 10px; }
+
+	/* メンバーを並べる親枠の設定 */
+	.Member_Container {
+		flex: 1; /* 残り半分（600px）を確保 */
+		display: flex; /* 内部をフレックスボックスにする */
+		justify-content: center; /* 横方向の真ん中に置く */
+		align-items: flex-end; /* 縦方向を下端に揃える */
+		gap: 20px; /* メンバー写真同士の隙間 */
+		max-width: none; /* 幅制限を解除して600px分しっかり使う */
+	}
+
+	/* アーカイブの設定 */
+	.Archive_Section {
+		margin-top: 0; /* ヘッダーとの隙間をリセット */
+		padding-top: 10px; /* 上の線との最低限の距離 */
+		display: grid; /* グリッドレイアウトを適用 */
+		
+		/* 1. 400pxを3列（3カラム）で並べる設定 */
+		grid-template-columns: repeat(3, 400px); 
+		
+		/* 2. カード同士の隙間は0（亮さんの指示通り） */
+		gap: 0; 
+		
+		/* 3. 全体の幅を 400px × 3枚 = 1200px に固定 */
+		width: 1200px; 
+		
+		margin: 0 auto; /* 画面の中央に寄せる */
+	}
+
+	/* アーカイブとMVのヘッダーを共通設定にする */
+	.Archive_Header, .MV_Header {
+		width: 100%; /* 横幅を一杯に確保 */
+		max-width: 1200px; /* 最大幅を1200pxに制限 */
+		margin: 60px auto 0px; /* 上に余白、左右中央、下に0の余白 */
+		text-align: center; /* テキストを中央寄せ */
+	}
+
+	/* 中の見出しを共通設定にし、フォントを明示的に指定する */
+	.Archive_Header h2, .MV_Header h2 {
+		/* font-family: serif; フォントを明朝体系（セリフ体）に固定 */
+		font-size: 1.5rem; /* 文字の大きさを1.2remに指定 */
+		letter-spacing: 0.2em; /* 字間を広げて上品な印象に */
+		text-transform: uppercase; /* 小文字で入力しても自動で大文字に変換 */
+		margin: 0; /* 見出し特有の外側の余白をリセット */
+		line-height: 1; /* 行の高さを1（隙間なし）に設定 */
+		font-weight: 300; /* 文字の太さを細く設定 */
+	}
+
+	.Archive_Line {
+		border: none; /* デフォルト線消去 */
+		border-top: 1px solid #000; /* 上端に黒線 */
+		width: 100%; /* 幅いっぱい */
+		opacity: 0.2; /* 透明度20% */
+		margin: 5px 0 0; /* 文字との間隔 */
+	}
+
+	.MV_Section {
+		display: grid; /* グリッドレイアウトを適用 */
+		grid-template-columns: repeat(3, 400px); /* 400pxを3列（計1200px）で並べる */
+		gap: 0; /* 隙間は一切なし */
+		width: 1200px; /* 全体の幅を1200pxに固定 */
+		margin: 0 auto; /* 画面の中央に配置 */
+		padding-top: 10px; /* 見出しの線との最低限の隙間 */
+	}
+	
+	.status { margin-top: 50px; opacity: 0.5; } /* ステータス文字 */
+
+/* モーダル全体の初期状態 */
+	.modal {
+		display: none; 
+		position: fixed; 
+		top: 0; 
+		left: 0; 
+		width: 100%; 
+		height: 100%; 
+		z-index: 1000; 
+	}
+
+/* 背景の黒 */
+	.modal_Backdrop {
+		position: absolute; 
+		width: 100%; 
+		height: 100%; 
+		background: rgba(0, 0, 0, 0.9); 
+	}
+
+/* 動画の枠 */
+	.modal_Content {
+		position: absolute; 
+		top: 50%; 
+		left: 50%; 
+		transform: translate(-50%, -50%); 
+		width: 80%; 
+		max-width: 960px; 
+	}
+
+/* 閉じるボタン */
+	#Close_Modal {
+		position: absolute; 
+		top: -40px; 
+		right: 0; 
+		background: none; 
+		color: #fff; 
+		border: 1px solid #fff; 
+		padding: 5px 15px; 
+		cursor: pointer; 
+	}
+
+	/* --- 画面幅が1200pxより狭くなった時（スマホ・タブレット）だけの特別ルール --- */
+@media screen and (max-width: 1200px) {
+  
+  /* 主要なパーツの幅を画面ぴったりに書き換える */
+  .Logo_Member_Wrapper, 
+  .Archive_Section, 
+  .MV_Section, 
+  .Archive_Header, 
+  .MV_Header {
+    width: 100% !important; /* 1200px指定を無視して100%にする */
+    min-width: 0 !important; /* 最小幅の固定も解除する */
+    max-width: 100vw !important; /* 画面幅を絶対超えないようにする */
+    padding: 0 20px; /* スマホ時に左右がくっつかないよう余白を作る */
+    box-sizing: border-box; /* パディングを含めた幅計算にする */
+  }
+
+  /* ロゴとメンバーの横並びを解除して縦にする */
+  .Logo_Member_Wrapper {
+    flex-direction: column; /* 縦並びに変更する */
+    align-items: center; /* 中央に揃える */
+  }
+
+  /* メンバー一覧の調整 */
+  .Member_Container {
+    flex-wrap: wrap; /* 画面幅が足りない時は自動で改行する */
+    justify-content: center; /* 中央に寄せる */
+    gap: 15px; /* メンバー間の隙間を少し狭くする */
+    margin-top: 40px; /* 上のロゴとの間に余白を作る */
+  }
+
+  /* アーカイブとMVを1列にする */
+  .Archive_Section, 
+  .MV_Section {
+    grid-template-columns: 1fr; /* グリッドを1カラムに変更する */
+    justify-items: center; /* アイテムを中央に置く */
+  }
+
+  /* サムネイル画像が枠からはみ出さないようにする */
+  .Archive_Item img, .MV_Item img {
+    width: 100% !important; /* 画像の幅を親要素（枠）いっぱいに広げる */
+    max-width: 100% !important; /* 画面幅を絶対に超えないように制限する */
+    height: auto !important; /* 縦横比を維持して高さを自動調整する */
+    display: block; /* 画像の下にできる謎の隙間を消す */
+    margin: 0 auto; /* 左右の余白を自動にして中央に寄せる */
+  }
+
+  /* ロゴ画像が画面からはみ出さないよう自動縮小させる */
+  .Main_Logo_Text img, .Main_Mark img {
+    max-width: 90vw; /* 画面幅の90%を上限にする */
+    height: auto; /* 縦横比を維持して縮小する */
+  }
+}
+/* --- レイアウト確認用の背景色 --- */
+/* ロゴエリアを薄い赤に 
+.Logo_Area {
+	background-color: rgba(255, 0, 0, 0.2); 
+}
+*/
+
+/* メンバーエリアを薄い青に 
+.Member_Container {
+	background-color: rgba(0, 0, 255, 0.2);
+}
+*/
+
+/* メンバーエリアを薄い青に 
+.Logo_Member_Wrapper{
+	background-color: rgba(0, 255, 0, 0.2); 
+}
+*/
+</style>
+<script>
+	// 1. 必要なパーツ（モーダル、コンテナ、閉じるボタン）を捕まえる
+	const modal = document.getElementById('Video_Modal'); 
+	const container = document.getElementById('Video_Player_Container'); 
+	const closeBtn = document.getElementById('Close_Modal'); 
+	const backDrop = document.querySelector('.modal_Backdrop'); 
+
+	// 2. サムネイルがクリックされた時の動き
+	document.querySelectorAll('.Thumbnail_Container').forEach(item => {
+    item.addEventListener('click', () => {
+      const videoUrl = item.getAttribute('data-video-url'); // CMSから届くURL（すでにembed形式）を取得
+      if (!videoUrl) return; // URLがなければ何もしない
+
+      // そのままiframeに流し込む（余計な変換はしない）
+      container.innerHTML = `<iframe width="100%" height="500" src="${videoUrl}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      
+      modal.style.display = 'block'; // モーダルを表示
+    });
+  });
+
+	// 3. 閉じる時の動き（ボタンまたは背景クリック）
+	const closeModal = () => {
+		modal.style.display = 'none'; // モーダルを隠す
+		container.innerHTML = ''; // 動画を消して音を止める
+	};
+
+	closeBtn.addEventListener('click', closeModal); // 閉じるボタンで実行
+	backDrop.addEventListener('click', closeModal); // 背景クリックでも閉じる
+</script>
+</body>
+</html>

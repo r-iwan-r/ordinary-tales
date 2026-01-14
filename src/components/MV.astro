@@ -1,0 +1,40 @@
+---
+const { movie } = Astro.props; // 親から動画データを受け取る
+---
+
+<div class="MV_Item">
+  {/* クリック検知用のクラスと、URL保持用の属性のみを追加 */}
+  <div class="Thumbnail_Container" data-video-url={movie.URL}>
+    {movie.IMG && (
+      <img 
+        src={movie.IMG.url} 
+        alt={movie.Title} 
+        width="400" 
+        height="225" 
+        class="MV_Thumbnail"
+      />
+    )}
+  </div>
+</div>
+
+<style>
+  .MV_Item {
+    width: 400px; /* 横幅固定 */
+    padding: 10px; /* 四方の余白 */
+    cursor: pointer; /* 指先アイコン */
+  }
+
+  .MV_Thumbnail {
+    width: 100%; /* 横幅いっぱい */
+    height: 225px; /* 高さ固定 */
+    object-fit: cover; /* 枠内で切り抜き */
+    filter: grayscale(100%); /* モノクロ設定 */
+    transition: all 0.3s ease; /* 変化を滑らかに */
+    border: 2px solid transparent; /* 最初は透明な枠 */
+  }
+
+  .MV_Item:hover .MV_Thumbnail {
+    filter: grayscale(0%); /* ホバーでカラー */
+    border: 2px solid #ff8c00; /* ホバーでオレンジ枠 */
+  }
+</style>

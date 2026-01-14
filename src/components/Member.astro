@@ -1,0 +1,43 @@
+---
+// src/components/Member.astro
+import type { Member as MemberType } from '../library/microcms'; // 型定義を読み込み
+
+interface Props {
+  member: MemberType; // 親（index.astro）から渡されるデータ
+}
+
+const { member } = Astro.props; // プロパティとして展開
+---
+
+<div class="Member_Card">
+  <img src={member.img.url} alt={member.Name} class="member-img" /> <p class="name">{member.Name}</p> <p class="role">{member.Part}</p> </div>
+
+<style>
+  /* 元々index.astroにあったスタイルをここに移植 */
+  .Member_Card {
+    width: 180px; /* 写真の横幅を固定 */
+    text-align: center; /* テキストを中央揃え */
+  }
+
+  .member-img {
+    width: 100%; /* 親の幅いっぱいに広げる */
+    aspect-ratio: 5 / 8; /* 黄金比を維持 */
+    object-fit: cover; /* 枠に合わせて切り抜き */
+    border-radius: 10px; /* 角の丸み */
+    background-color: #f0f0f0; /* 読み込み中の背景色 */
+  }
+
+  .name {
+    margin-top: 2px; /* 写真との間隔 */
+    font-weight: bold; /* 太字 */
+    font-size: 1.1rem; /* フォントサイズ */
+    letter-spacing: 0.05em; /* 文字間隔 */
+  }
+
+  .role {
+    font-size: 0.8rem; /* 小さめの文字 */
+    opacity: 0.6; /* 文字を薄く */
+    margin-top: 0px; /* 名前との間隔 */
+    white-space: pre-wrap; /* microCMSの改行を有効化 */
+  }
+</style>
